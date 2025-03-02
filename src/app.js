@@ -9,6 +9,10 @@ app.use(morgan('dev')); // HTTP request logger middleware
 app.use(helmet()); // Secure Express apps by setting various HTTP headers
 app.use(compression()); // Node.js compression middleware
 
+// Database
+require('./db/init.mongodb');
+// const { countConnect } = require('./helpers/check.connect');
+// countConnect();
 
 app.get('/', (req, res) => {
     const strCompress='Hello World';
