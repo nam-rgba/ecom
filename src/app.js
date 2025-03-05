@@ -8,19 +8,15 @@ const compression = require('compression')
 app.use(morgan('dev')); // HTTP request logger middleware
 app.use(helmet()); // Secure Express apps by setting various HTTP headers
 app.use(compression()); // Node.js compression middleware
+app.use(express.json()); // Parse JSON bodies (as sent by API clients)
+app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies (as sent by HTML forms)
 
 // Database
 require('./db/init.mongodb');
 // const { countConnect } = require('./helpers/check.connect');
 // countConnect();
 
-app.get('/', (req, res) => {
-    const strCompress='Hello World';
-    return res.status(200).json({
-        message: 'Hello World',
-        metadata: strCompress.repeat(10000)
-    });
-}
-);
+// Routes
+app.use('', require('./routes'));
 
 module.exports = app;
