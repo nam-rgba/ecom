@@ -1,5 +1,8 @@
 const AccessService = require('../services/access.service');
 
+// controller take the request and response
+// and call the service to do the actual work
+// then return the response to the client
 class AcessController {
     signUp = async (req, res, next) => {
         // code here
@@ -16,18 +19,3 @@ class AcessController {
 
 module.exports = new AcessController();
 
-// class Accesscontroller{
-//     signUp = async (req, res, next)=>{
-//         try {
-//             console.log(`[P]::singUp::`,req.body);
-//             return res.status(201).json({
-//                 code: '20001',
-//                 metadata:{userId:1}
-//             })
-//         } catch (error) {
-//             next(error);
-//         }
-//     }
-// }
-
-// module.export= new Accesscontroller();

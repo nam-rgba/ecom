@@ -10,7 +10,12 @@ var tokenSchema = new Schema({
         required: true,
         reference: 'Shop'
     },
-    publicKey:{
+    accessKey:{
+        type: String,               // Mỗi tài khoản (client) sẽ có một public key riêng
+        required: true,
+
+    },
+    refreshKey:{
         type: String,               // Mỗi tài khoản (client) sẽ có một public key riêng
         required: true,
 

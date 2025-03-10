@@ -43,44 +43,48 @@ class AccessService {
             /* ------------------------------------------------------------------------------------------- */
             // if create shop success
             if (newShop) {
-                // create a pair of public and private keys
-                const { privateKey, publicKey } = crypto.generateKeyPairSync('rsa', {
-                    modulusLength: 4096,
-                    publicKeyEncoding: {
-                        type: 'pkcs1',
-                        format: 'pem'
-                    },
-                    privateKeyEncoding: {
-                        type: 'pkcs1',
-                        format: 'pem'
-                    }
-                })
+                // create a pair keys of access token and refresh token
+                const accessKey = crypto.randomBytes(32).toString('hex');
+                const refreshKey = crypto.randomBytes(32).toString('hex');
 
                 /* 
                 *create a row in the keyTokenModel table
-                *cause the public key to be stored in the database in the form of a string
+                * with the userId, accessKey and refreshKey
                 */
-                const publicKeyString = KeyTokenService.createKeyToken({
+                const DBKEY = KeyTokenService.createKeyToken({
                     userId: newShop._id,
-                    publicKey
+                    accessKey,
+                    refreshKey
                 })
                 // if create fail
-                if (!publicKeyString) {
+                if (!DBKEY) {
                     return {
                         code: 'xxxx',
                         message: 'There was a problem creating the public key',
                     }
                 }
-                // const publicKeyObject = crypto.createPublicKey(publicKeyString);
 
 
                 //if create successfully, then create a token pair (access token and refresh token)
                 const tokens = createTokenPair({
                     userId: newShop._id,
                     email
-                            }, publicKey, privateKey);
-                console.log('Vrated token pair:', tokens);
+                            }, accessKey, refreshKey);
+                console.log('Crated token pair:', tokens);
 
+                if (!tokens) {
+                    return {
+                        code: 'xxxx',
+                        message: 'There was a problem creating the token pair',
+                    }
+                }
+
+                // add refresh token to the database
+                
+                await KeyTokenService.updateRefreshToken({
+                    userId: newShop._id,
+                    refreshToken: tokens.refreshToken
+                })
 
 
                 return {

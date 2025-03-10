@@ -11,19 +11,35 @@
 const keyTokenModel = require('../models/token.model');
 
 class KeyTokenService {
-    static async createKeyToken({ userId, publicKey }) {
+    static async createKeyToken({ userId, accessKey, refreshKey }) {
         try {
-            const publicKeyString = publicKey.toString();
-            console.log('publicKeyString:', publicKeyString);
-
             // Lưu token vào database
-            const token = await keyTokenModel.create({ userId, publicKey: publicKeyString });
+            const token = await keyTokenModel.create({ userId, accessKey, refreshKey });
 
             // Nếu lưu thành công, trả về publicKeyString, ngược lại trả về null
-            return token ? token.publicKey : null;
+            return token? {accessKey, refreshKey}: null;
         } catch (error) {
             console.error('Error in createKeyToken:', error);
             throw new Error('Cannot create key token');
+        }
+    }
+
+    static async updateRefreshToken({ userId, refreshToken }) {
+        try {
+            // Cập nhật token vào database
+            const token = await keyTokenModel
+                .findOneAndUpdate({
+                    userId: userId
+                }, {
+                    refreshKey: refreshToken
+                }, {
+                    new: true
+                });
+            
+        } catch (error) {
+            console.error('Error in updateRefreshToken:', error);
+            throw new Error('Cannot update refresh token');
+            
         }
     }
 }

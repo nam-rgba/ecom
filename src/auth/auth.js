@@ -1,15 +1,15 @@
 const JWT = require('jsonwebtoken');
 
-const createTokenPair = (payload, public, private) => {
+const createTokenPair = (payload, accessKey, refreshKey) => {
     // public key as a string
     try {
         //create access token
-        const accessToken = JWT.sign(payload, private, { algorithm: 'RS256', expiresIn: '3 days' });
+        const accessToken = JWT.sign(payload, accessKey, {  expiresIn: '1 days' });
 
         //create refresh token
-        const refreshToken = JWT.sign(payload, private, { algorithm: 'RS256', expiresIn: '7 days' });
+        const refreshToken = JWT.sign(payload, refreshKey, {  expiresIn: '7 days' });
 
-        JWT.verify(accessToken, public, (err, decoded) => {
+        JWT.verify(accessToken, accessKey, (err, decoded) => {
             if (err) {
                 console.error('Error in verify access token:', err);
             }else{
