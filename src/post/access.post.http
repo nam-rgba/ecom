@@ -5,7 +5,7 @@
 
 POST {{url_dev}}/shop/signup
 Content-Type: application/json
-x-api-key: 8fac0b1ec8bb65b32d93efa575dde58ff9d72004bdc60b3476ac37f9c18cc550
+# apikey
 
 {
     "name": "test3",
