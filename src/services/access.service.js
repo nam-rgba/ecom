@@ -12,6 +12,7 @@ const KeyTokenService = require('./token.service');
 const { createTokenPair } = require('../auth/auth');
 const crypto = require('crypto');
 const {getInfoData} = require('../utils/index');
+const {BadRequestError, ConflictRequestError} = require('../res/error.response');
 
 const Roles = {
     SHOP: '000S1',//SHOP
@@ -26,11 +27,7 @@ class AccessService {
             // find email
             const emailholder = await shop.findOne({ email: email }).lean();
             if (emailholder) {
-                return {
-                    code: 'xxxx',
-                    message: 'Email already exists',
-                    status: 'error'
-                }
+                throw new BadRequestError('Email already exists');
 
             }
             // create new shop
