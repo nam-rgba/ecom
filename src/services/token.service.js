@@ -6,42 +6,27 @@
  * @ param: userId, publicKey
  * @ return: publicKeyString
  *  
- */ 
- 
+ */
+
 const keyTokenModel = require('../models/token.model');
 
 class KeyTokenService {
-    static async createKeyToken({ userId, accessKey, refreshKey }) {
-        try {
-            // Lưu token vào database
-            const token = await keyTokenModel.create({ userId, accessKey, refreshKey });
+    static async createKeyToken({ userId, accessKey, refreshKey, refreshTokensUsed, refreshToken }) {
 
-            // Nếu lưu thành công, trả về publicKeyString, ngược lại trả về null
-            return token? {accessKey, refreshKey}: null;
+        try {
+            const filter = { userId: userId },
+                update = { accessKey, refreshKey, refreshTokensUsed: refreshTokensUsed, refreshToken },
+                options = {new: true, upsert: true }
+
+            const keysUpdated = await keyTokenModel.findOneAndUpdate(filter, update, options)
+            return keysUpdated? keysUpdated : null
         } catch (error) {
             console.error('Error in createKeyToken:', error);
             throw new Error('Cannot create key token');
         }
     }
 
-    static async updateRefreshToken({ userId, refreshToken }) {
-        try {
-            // Cập nhật token vào database
-            const token = await keyTokenModel
-                .findOneAndUpdate({
-                    userId: userId
-                }, {
-                    refreshKey: refreshToken
-                }, {
-                    new: true
-                });
-            
-        } catch (error) {
-            console.error('Error in updateRefreshToken:', error);
-            throw new Error('Cannot update refresh token');
-            
-        }
-    }
+
 }
 
 module.exports = KeyTokenService;

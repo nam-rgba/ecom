@@ -6,9 +6,21 @@
 POST {{url_dev}}/shop/signup
 Content-Type: application/json
 
+{
+    "name": "test",
+    "email": "test@gmail.com",
+    "password": "123456"
+}
+
+
+
+### signin
+
+POST {{url_dev}}/shop/signin
+Content-Type: application/json
+x-api-key: 3f0026b44fa0cd6ae0f797334d67b89c13e5db585d666c1fa454e80bbe3c10b3
 
 {
-    "name": "test2",
-    "email": "test2@gmail.com",
+    "email": "test@gmail.com",
     "password": "123456"
 }

@@ -20,9 +20,13 @@ var tokenSchema = new Schema({
         required: true,
 
     },
-    refreshToken: {             // Refresh token có thời hạn 7 ngày, khi đăng nhập trên nhiều thiết bị
+    refreshTokensUsed: {             // Refresh token có thời hạn 7 ngày, khi đăng nhập trên nhiều thiết bị
         type: Array,            // thì có thể lưu nhiều fresh token
         default: [],            // Đăng xuất trên một thiết bị sẽ xóa fresh token của thiết bị đó
+    },
+    refreshToken:{
+        type: String,
+        require: true,
     }
 },{
     collection: COLLECTION_NAME,

@@ -11,6 +11,18 @@ class AcessController {
             metadata: await AccessService.signup(req.body)
         }).send(res);
     }
+
+    signin = async (req, res, next)=>{
+
+
+            const refreshToken = await req.headers['refresh_token']
+            // console.log("can i get rt:",refreshToken)
+            new OK ({
+                message: 'Login successfully',
+                metadata: await AccessService.signin(req.body,refreshToken)
+            }).send(res)
+
+    }
 }
 
 module.exports = new AcessController();

@@ -4,15 +4,20 @@
  */
 
 
-
-// import model
-const shop = require('../models/shop.model');
 const bcrypt = require('bcryptjs');
-const KeyTokenService = require('./token.service');
-const { createTokenPair } = require('../auth/auth');
 const crypto = require('crypto');
-const {getInfoData} = require('../utils/index');
-const {BadRequestError, ConflictRequestError} = require('../res/error.response');
+
+// import models
+const shop = require('../models/shop.model');
+
+// import services
+const KeyTokenService = require('./token.service');
+const { findByEmail } = require('./shop.service')
+
+// import middleware and helper
+const { createTokenPair } = require('../auth/auth');
+const { getInfoData } = require('../utils/index');
+const { BadRequestError, ConflictRequestError, AuthFailureError } = require('../res/error.response');
 
 const Roles = {
     SHOP: '000S1',//SHOP
@@ -22,15 +27,61 @@ const Roles = {
 }
 
 class AccessService {
+
+    // Sign In function -----------------------------------------------------------
+    /*
+        Steps:
+        1. Check email in the database
+        2. password matching
+        3. create a pair of key
+        4. generate a new refresh token and access token
+        5 return
+    */
+    static signin = async ({ email, password, refreshToken }) => {
+        // step 1: check email
+        const foundShop = await findByEmail({ email })
+        console.log(foundShop)
+        if (!email) throw new BadRequestError('No shop found!')
+
+        // step 2: check password match
+        const isPasswordMatch = await bcrypt.compare(password, foundShop.password)
+        if (!isPasswordMatch) throw new AuthFailureError('Authenticated error!')
+
+        // step 3: generate pair of key     
+        const accessKey = crypto.randomBytes(32).toString('hex');
+        const refreshKey = crypto.randomBytes(32).toString('hex');
+
+        // step 4: tokens
+        // destructuring
+        const { _id: userId } = foundShop
+
+        const tokens = createTokenPair({ userId, email }, accessKey, refreshKey)
+
+        await KeyTokenService.createKeyToken({
+            userId,
+            accessKey,
+            refreshKey,
+            refreshTokensUsed: refreshToken,
+            refreshToken: tokens.refreshToken
+        })
+
+        // step 5: return
+        return {
+            shop: getInfoData(foundShop, ['_id', 'email', 'name']),
+            tokens
+        }
+    }
+
+    // Sign Up function ----------------------------------------------------------- 
     static signup = async ({ name, email, password }) => {
         try {
-            // find email
+            // Step 1: find email
             const emailholder = await shop.findOne({ email: email }).lean();
             if (emailholder) {
                 throw new BadRequestError('Email already exists');
 
             }
-            // create new shop
+            // Step 2:  create new shop
             const hashPassword = bcrypt.hashSync(password, 10);
             const newShop = await shop.create({
                 name, email, password: hashPassword, role: Roles.SHOP
@@ -38,36 +89,22 @@ class AccessService {
 
 
             /* ------------------------------------------------------------------------------------------- */
-            // if create shop success
+            // Step 3:  if create shop success
             if (newShop) {
-                // create a pair keys of access token and refresh token
-                const accessKey = crypto.randomBytes(32).toString('hex');
-                const refreshKey = crypto.randomBytes(32).toString('hex');
-
                 /* 
                 *create a row in the keyTokenModel table
                 * with the userId, accessKey and refreshKey
                 */
-                const DBKEY = KeyTokenService.createKeyToken({
-                    userId: newShop._id,
-                    accessKey,
-                    refreshKey
-                })
-                // if create fail
-                if (!DBKEY) {
-                    return {
-                        code: 'xxxx',
-                        message: 'There was a problem creating the public key',
-                    }
-                }
+                // generate pair of key
+                const accessKey = crypto.randomBytes(32).toString('hex');
+                const refreshKey = crypto.randomBytes(32).toString('hex');
 
-
-                //if create successfully, then create a token pair (access token and refresh token)
+                // Step 4: if create successfully, then create a token pair (access token and refresh token)
                 const tokens = createTokenPair({
                     userId: newShop._id,
                     email
-                            }, accessKey, refreshKey);
-                console.log('Crated token pair:', tokens);
+                }, accessKey, refreshKey);
+                // console.log('Crated token pair:', tokens);
 
                 if (!tokens) {
                     return {
@@ -76,12 +113,24 @@ class AccessService {
                     }
                 }
 
-                // add refresh token to the database
-                
-                await KeyTokenService.updateRefreshToken({
+
+                const DBKEY = KeyTokenService.createKeyToken({
                     userId: newShop._id,
+                    accessKey,
+                    refreshKey,
                     refreshToken: tokens.refreshToken
                 })
+                // if create fail
+                if (!DBKEY) {
+                    return {
+                        code: 'xxxx',
+                        message: 'There was a problem creating the key',
+                    }
+                }
+
+
+
+
 
 
                 return {
@@ -89,7 +138,7 @@ class AccessService {
                     message: 'Signup successfully',
                     status: 'success',
                     metadata: {
-                        shop: getInfoData(newShop, ['name', 'email','_id']),
+                        shop: getInfoData(newShop, ['name', 'email', '_id']),
                         accessToken: tokens.accessToken,
                         refreshToken: tokens.refreshToken,
 
