@@ -17,7 +17,7 @@ const { findByEmail } = require('./shop.service')
 // import middleware and helper
 const { createTokenPair } = require('../auth/auth');
 const { getInfoData } = require('../utils/index');
-const { BadRequestError, ConflictRequestError, AuthFailureError } = require('../res/error.response');
+const { BadRequestError, AuthFailureError } = require('../res/error.response');
 
 const Roles = {
     SHOP: '000S1',//SHOP
@@ -41,7 +41,7 @@ class AccessService {
         // step 1: check email
         const foundShop = await findByEmail({ email })
         console.log(foundShop)
-        if (!email) throw new BadRequestError('No shop found!')
+        if (!foundShop) throw new BadRequestError('No shop found!')
 
         // step 2: check password match
         const isPasswordMatch = await bcrypt.compare(password, foundShop.password)
@@ -61,7 +61,6 @@ class AccessService {
             userId,
             accessKey,
             refreshKey,
-            refreshTokensUsed: refreshToken,
             refreshToken: tokens.refreshToken
         })
 
@@ -157,6 +156,13 @@ class AccessService {
                 status: 'error'
             }
         }
+    }
+
+    /* Logout function */
+    static signout = async(keyStore) =>{
+        // console.log('sigout:',keyStore)
+        const abandon = await KeyTokenService.removeKey(keyStore._id)
+        return abandon
     }
 }
 

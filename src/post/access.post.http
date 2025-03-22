@@ -24,3 +24,11 @@ x-api-key: 3f0026b44fa0cd6ae0f797334d67b89c13e5db585d666c1fa454e80bbe3c10b3
     "email": "test@gmail.com",
     "password": "123456"
 }
+
+
+### signout 
+POST {{url_dev}}/shop/signout
+Content-Type: application/json
+x-api-key: 3f0026b44fa0cd6ae0f797334d67b89c13e5db585d666c1fa454e80bbe3c10b3
+x-client-id: 67da36899ba9b157fd0eb7d4
+authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2RhMzY4OTliYTliMTU3ZmQwZWI3ZDQiLCJlbWFpbCI6InRlc3RAZ21haWwuY29tIiwiaWF0IjoxNzQyNjI0MzI3LCJleHAiOjE3NDI3MTA3Mjd9.sZu9yFmR3cA_92ul5fnh5Jy1TBqU4-aFHetttX6iLzk

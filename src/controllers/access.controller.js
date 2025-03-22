@@ -23,6 +23,13 @@ class AcessController {
             }).send(res)
 
     }
+
+    signout = async (req, res, next) =>{
+        new OK ({
+            message: 'youre banned',
+            metadata: await AccessService.signout(req.keyStore)
+        }).send(res)
+    }
 }
 
 module.exports = new AcessController();
