@@ -2,13 +2,13 @@ const { Schema, model } = require("mongoose")
 
 
 const DOCUMENT_NAME = 'Product'
-const COLLECTION_NAME = 'Products'
+const COLLECTION_NAME = 'products'
 
-const productSchema = new Schema({
+var productSchema = new Schema({
     product_name: { type: String, require: true },
     product_thumb: { type: String, require: true },
     product_description: String,
-    product_shop: {type: Schema.Types.ObjectId, reference: 'Shop'},
+    product_shop: {type: Schema.Types.ObjectId, ref: 'Shop'},
     product_price: { type: Number, require: true },
     product_quantity: { type: Number, require: true },
     product_type: { type: String, require: true, enum: ['Electronic', 'Clother', 'Food'] },
@@ -18,27 +18,27 @@ const productSchema = new Schema({
     timestamps: true
 })
 
-const foodSchema =  new Schema({
+var foodSchema =  new Schema({
     brand: {type: String, require: true},
     date: Number,
     vegan: Boolean
 },{
-    collection: 'Foods',
+    collection: 'foods',
     timestamps: true
 })
 
-const clotherSchema =  new Schema({
+var clotherSchema =  new Schema({
     brand: {type: String, require: true},
     size: String,
     meterial: String
 },{
-    collection: 'Clothers',
+    collection: 'clothers',
     timestamps: true
 })
 
 module.exports = {
     product : model(DOCUMENT_NAME, productSchema),
     food : model('Food', foodSchema),
-    clothing : model('Clother', clotherSchema),
+    clother : model('Clother', clotherSchema),
 
 }
