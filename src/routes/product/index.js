@@ -2,9 +2,9 @@ const express = require('express');
 const productController = require('../../controllers/product.controller');
 const router = express.Router();
 const {asyncHandler} = require('../../helpers/asyncHandler');
-const { authentication } = require('../../auth/auth');
 
 
+router.get('/search/:key', asyncHandler(productController.searchProduct))
 
 
 
@@ -12,4 +12,5 @@ const { authentication } = require('../../auth/auth');
 // router.use(authentication)
 
 router.post('', asyncHandler(productController.createProduct))
+router.get('/all', asyncHandler(productController.getDataAllProduct))
 module.exports = router;

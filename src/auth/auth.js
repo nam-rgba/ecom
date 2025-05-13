@@ -59,7 +59,7 @@ const authentication = asyncHandler(async (req, res, next) => {
     /* get access key first */
     const row = await findAccessKeyById(userId )
     if (!row) throw new NotFoundError('Not found user key')
-
+    console.log('ROW:',row)
     try {
         const decoded =  JWT.verify(accessToken, row.accessKey)
         if(userId!=decoded.userId.toString()) throw new AuthFailureError('Invalid User')

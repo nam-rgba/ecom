@@ -1,5 +1,5 @@
 const { Schema, model } = require("mongoose")
-
+const slugify = require('slugify')
 
 const DOCUMENT_NAME = 'Product'
 const COLLECTION_NAME = 'products'
@@ -8,17 +8,34 @@ var productSchema = new Schema({
     product_name: { type: String, require: true },
     product_thumb: { type: String, require: true },
     product_description: String,
+    product_slug: String,
     product_shop: {type: Schema.Types.ObjectId, ref: 'Shop'},
     product_price: { type: Number, require: true },
     product_quantity: { type: Number, require: true },
-    product_type: { type: String, require: true, enum: ['Electronic', 'Clother', 'Food'] },
-    product_attributes: { type: Schema.Types.Mixed, require: true }
+    product_type: { type: String, require: true, enum: ['Phone', 'Clother', 'Food'] },
+    product_attributes: { type: Schema.Types.Mixed, require: true },
+    product_variations :{type: Array, default:[]},
+    isDraft: {type: Boolean, default: true, index: true, select: false},
+    isPublished: {type: Boolean, default: false, index: true, select: false},
+    
 }, {
     collection: COLLECTION_NAME,
     timestamps: true
 })
 
+// Create index
+productSchema.index({product_name: 'text', product_description:'text'})
+
+// Document middleware run before save
+productSchema.pre('save',function(next){
+    this.product_slug=slugify(this.product_name,{lower: true})
+    next()
+})
+
+
+// Food================================================
 var foodSchema =  new Schema({
+    product_shop: {type: Schema.Types.ObjectId, ref: 'Shop'},
     brand: {type: String, require: true},
     date: Number,
     vegan: Boolean
@@ -27,7 +44,10 @@ var foodSchema =  new Schema({
     timestamps: true
 })
 
+
+// Clother================================================
 var clotherSchema =  new Schema({
+    product_shop: {type: Schema.Types.ObjectId, ref: 'Shop'},
     brand: {type: String, require: true},
     size: String,
     meterial: String
@@ -36,9 +56,21 @@ var clotherSchema =  new Schema({
     timestamps: true
 })
 
+
+// Phonoe================================================
+var phoneSchema =  new Schema({
+    product_shop: {type: Schema.Types.ObjectId, ref: 'Shop'},
+    brand: {type: String, require: true},
+    ram: Number,
+    ssd: Number
+},{
+    collection: 'phones',
+    timestamps: true
+})
+
 module.exports = {
     product : model(DOCUMENT_NAME, productSchema),
     food : model('Food', foodSchema),
     clother : model('Clother', clotherSchema),
-
+    phone: model('Phone', phoneSchema)
 }

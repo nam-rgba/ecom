@@ -127,11 +127,6 @@ class AccessService {
                     }
                 }
 
-
-
-
-
-
                 return {
                     code: 201,
                     message: 'Signup successfully',
