@@ -8,9 +8,9 @@ var tagSchema = new Schema({
     name: {type: String, require: true},
     priority: {type: Number, require: true, default:1}
 },{
-    collection: 'tag',
+    collection: COLLECTTION_NAME,
     timestamps: false
 });
 
 //Export the model
-module.exports = mongoose.model('Tag', tagSchema);
+module.exports = model(DOCUMENT_NAME, tagSchema);

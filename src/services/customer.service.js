@@ -11,33 +11,21 @@ class CustomerService {
     }
 
     static addCustomer = async ({ name, phone, address }) => {
-        try {
-            const isPhoneRegisted = await this.findCustomerByPhone({ phone })
-            if (isPhoneRegisted) throw new ConflictRequestError('This user is already registered!')
 
-            const newCustomer = await customerModel.create({ name, phone, address })
-            if (!newCustomer) {
-                return {
-                    code: 200,
-                    message: 'There is an error when add customer',
-                    metadata: null
-                }
-            }
+        const isPhoneRegisted = await this.findCustomerByPhone({ phone })
+        if (isPhoneRegisted) throw new ConflictRequestError('This user is already registered!')
 
-            return {
-                code: 201,
-                message: 'Add customer successfully',
-                status: 'OK',
-                metadata: newCustomer
-            }
+        const newCustomer = await customerModel.create({ name, phone, address })
+        if (!newCustomer) throw new BadRequestError('Cannot add new customer')
 
-        } catch (error) {
-            return {
-                code: 'xxx',
-                message: error.message,
-                status: 'error'
-            }
-        }
+        return newCustomer
+
+
+    }
+
+    static updateCustomer = async (customerId) => {
+        // Remove null or undefind
+
     }
 }
 
