@@ -12,11 +12,12 @@ var productSchema = new Schema({
     product_shop: {type: Schema.Types.ObjectId, ref: 'Shop'},
     product_price: { type: Number, require: true },
     product_quantity: { type: Number, require: true },
-    product_type: { type: String, require: true, enum: ['Phone', 'Clother', 'Food'] },
+    product_type: { type: String, require: true, enum: ['rice'] },
     product_attributes: { type: Schema.Types.Mixed, require: true },
     product_variations :{type: Array, default:[]},
     isDraft: {type: Boolean, default: true, index: true, select: false},
     isPublished: {type: Boolean, default: false, index: true, select: false},
+    product_code: {type: String, unique: true, require: true}
     
 }, {
     collection: COLLECTION_NAME,
@@ -34,43 +35,19 @@ productSchema.pre('save',function(next){
 
 
 // Food================================================
-var foodSchema =  new Schema({
+var riceSchema =  new Schema({
     product_shop: {type: Schema.Types.ObjectId, ref: 'Shop'},
     brand: {type: String, require: true},
     date: Number,
-    vegan: Boolean
+    com: {type: String, require: true}
 },{
-    collection: 'foods',
+    collection: 'rice',
     timestamps: true
 })
 
 
-// Clother================================================
-var clotherSchema =  new Schema({
-    product_shop: {type: Schema.Types.ObjectId, ref: 'Shop'},
-    brand: {type: String, require: true},
-    size: String,
-    meterial: String
-},{
-    collection: 'clothers',
-    timestamps: true
-})
-
-
-// Phonoe================================================
-var phoneSchema =  new Schema({
-    product_shop: {type: Schema.Types.ObjectId, ref: 'Shop'},
-    brand: {type: String, require: true},
-    ram: Number,
-    ssd: Number
-},{
-    collection: 'phones',
-    timestamps: true
-})
 
 module.exports = {
     product : model(DOCUMENT_NAME, productSchema),
-    food : model('Food', foodSchema),
-    clother : model('Clother', clotherSchema),
-    phone: model('Phone', phoneSchema)
+    rice : model('rice', riceSchema),
 }

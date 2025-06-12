@@ -13,15 +13,12 @@ class AcessController {
     }
 
     signin = async (req, res, next)=>{
-
-
             const refreshToken = await req.headers['refresh_token']
             // console.log("can i get rt:",refreshToken)
             new OK ({
                 message: 'Login successfully',
                 metadata: await AccessService.signin(req.body,refreshToken)
             }).send(res)
-
     }
 
     signout = async (req, res, next) =>{

@@ -1,4 +1,4 @@
-const { product, clother, food, phone } = require("../models/product.model")
+const { product, rice } = require("../models/product.model")
 const { BadRequestError } = require('../res/error.response')
 const {findAllProductIf, searchByText} = require('../models/repository/product.repo')
 
@@ -44,6 +44,7 @@ class Product {
         this.product_quantity = product_quantity
         this.product_type = product_type
         this.product_attributes = product_attributes
+        this.product_code = product_code
     }
 
     async createProduct(_id) {
@@ -54,58 +55,29 @@ class Product {
     }
 }
 
-class Clother extends Product {
-    async createProduct() {
-        const newClother = await clother.create({
-            ...this.product_attributes,
-            product_shop: this.product_shop
-        })
-        if (!newClother) throw new BadRequestError('Cannot create clother')
 
-        const newProduct = await super.createProduct(newClother._id)
-        if (!newProduct) throw new BadRequestError('create new product error')
 
-        return newProduct;
-    }
-}
-
-class Food extends Product {
+class Rice extends Product {
     async createProduct() {
         
-        const newFood = await food.create({
+        const newRice = await rice.create({
             ...this.product_attributes,
             product_shop: this.product_shop,
         })
 
-        if (!newFood) throw new BadRequestError('Cannot create food')
+        if (!newRice) throw new BadRequestError('Cannot create rice')
 
-        const newProduct = await super.createProduct(newFood._id)
+        const newProduct = await super.createProduct(newRice._id)
         if (!newProduct) throw new BadRequestError('create new product error')
 
         return newProduct;
     }
 }
 
-class Phone extends Product {
-    async createProduct() {
-        
-        const newPhone = await phone.create({
-            ...this.product_attributes,
-            product_shop: this.product_shop,
-        })
 
-        if (!newPhone) throw new BadRequestError('Cannot create food')
 
-        const newProduct = await super.createProduct(newPhone._id)
-        if (!newProduct) throw new BadRequestError('create new product error')
+ProductFactory.addClassType('rice', Rice)
 
-        return newProduct;
-    }
-}
-
-ProductFactory.addClassType('Clother', Clother)
-ProductFactory.addClassType('Food', Food)
-ProductFactory.addClassType('Phone', Phone)
 
 
 module.exports = ProductFactory

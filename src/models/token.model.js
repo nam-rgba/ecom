@@ -13,12 +13,10 @@ var tokenSchema = new Schema({
     accessKey:{
         type: String,               // Mỗi tài khoản (client) sẽ có một public key riêng
         required: true,
-
     },
     refreshKey:{
         type: String,               // Mỗi tài khoản (client) sẽ có một public key riêng
         required: true,
-
     },
     refreshTokensUsed: {             // Refresh token có thời hạn 7 ngày, khi đăng nhập trên nhiều thiết bị
         type: Array,            // thì có thể lưu nhiều fresh token

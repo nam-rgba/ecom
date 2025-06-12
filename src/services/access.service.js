@@ -78,15 +78,12 @@ class AccessService {
             const emailholder = await shop.findOne({ email: email }).lean();
             if (emailholder) {
                 throw new BadRequestError('Email already exists');
-
             }
             // Step 2:  create new shop
             const hashPassword = bcrypt.hashSync(password, 10);
             const newShop = await shop.create({
                 name, email, password: hashPassword, role: Roles.SHOP
             });
-
-
             /* ------------------------------------------------------------------------------------------- */
             // Step 3:  if create shop success
             if (newShop) {
@@ -98,7 +95,7 @@ class AccessService {
                 const accessKey = crypto.randomBytes(32).toString('hex');
                 const refreshKey = crypto.randomBytes(32).toString('hex');
 
-                // Step 4: if create successfully, then create a token pair (access token and refresh token)
+                // Step 4: if crea  te successfully, then create a token pair (access token and refresh token)
                 const tokens = createTokenPair({
                     userId: newShop._id,
                     email
@@ -155,9 +152,13 @@ class AccessService {
 
     /* Logout function */
     static signout = async(keyStore) =>{
+
+
         // console.log('sigout:',keyStore)
         const abandon = await KeyTokenService.removeKey(keyStore._id)
         return abandon
+
+        
     }
 }
 

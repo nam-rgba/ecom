@@ -17,8 +17,7 @@ class TagServices {
         return tagModel.findAll().lean()
     }
 
-
-
+ 
     // delete a tag
     static deleteTag = async (tagId) =>{
         const deleted = await tagModel.findByIdAndDelete(tagId)

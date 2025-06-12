@@ -6,7 +6,6 @@ const COLLECTTION_NAME = 'tag'
 // Declare the Schema of the Mongo model
 var tagSchema = new Schema({
     name: {type: String, require: true},
-    priority: {type: Number, require: true, default:1}
 },{
     collection: COLLECTTION_NAME,
     timestamps: false
