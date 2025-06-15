@@ -9,7 +9,7 @@ var customerSchema = new mongoose.Schema({
     address: {type: String,required: true},
     referral: {type: mongoose.Schema.Types.ObjectId, ref: 'Customer'},
     point: {type: Number,default: 0,required: true},
-    tag:  { type: mongoose.Schema.Types.Mixed, require: true },
+    tag:  { type: mongoose.Schema.Types.Mixed, require: true , default:{}},
     bpm: {type: Number,default: 1},
     type: {type: String, enum:['SI','LE']},
 
@@ -30,7 +30,7 @@ var SI = new mongoose.Schema({
 var LE = new mongoose.Schema({
     customerId: {type: mongoose.Schema.Types.ObjectId, ref: 'Customer'},
     freeship: {type: Boolean,require: true,default: false},
-    rice: {type: mongoose.Schema.Types.ObjectId, ref: 'Product'}
+    favorite: String
 }, {
     collection: 'LE',
     timestamps: true

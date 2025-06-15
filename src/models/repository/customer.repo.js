@@ -1,4 +1,4 @@
-const customer =  require('../customer.model')
+const {customer} =  require('../customer.model')
 
 const findAllCustomerIf = async ({query, limit, skip}) =>{
     return await customer.find(query)

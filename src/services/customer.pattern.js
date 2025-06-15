@@ -1,7 +1,7 @@
 const { customer, SI, LE } = require('../models/customer.model');
 const tags = require('../models/tag.model');
 const { BadRequestError, NotFoundError } = require('../res/error.response')
-const {findAllCustomerIf} = require('../models/repository/customer.repo')
+const { findAllCustomerIf } = require('../models/repository/customer.repo')
 
 
 
@@ -11,12 +11,12 @@ class CustomerFactory {
     static customerTypeStrore = {};
 
     //add new type
-    static addClassType (type, classRef) {
+    static addClassType(type, classRef) {
         CustomerFactory.customerTypeStrore[type] = classRef
     }
 
     // handleCreate
-    static async createCustomer(type, payload){
+    static async createCustomer(type, payload) {
         const customerClass = CustomerFactory.customerTypeStrore[type]
         if (!customerClass) throw new BadRequestError('Invalid class')
 
@@ -27,35 +27,53 @@ class CustomerFactory {
 
     // ------------------------------------------------------------------------------------
     // Handle Logic
-    
+
 
     /* Set tag for one Customer */
-    static async setTag (tagId, cusId) {
+    static async setTag({ tagId, cusId }) {
         const customerFound = await customer.findById(cusId)
-        if(!customerFound) throw new NotFoundError('Not found Customer!')
+        if (!customerFound) throw new NotFoundError('Not found Customer!')
 
-        const tagFound = await tags.findById(tagId)
-        if(!tagFound) throw new NotFoundError('Not found tag!')
-                
-        if (customerFound.tag._id === tagFound._id) throw new BadRequestError('This tag is already set for this customer')
-        
-        customerFound.tag = tagFound.toObject()
+        const tagFound = await tags.findById(tagId).lean()
+        if (!tagFound) throw new NotFoundError('Not found tag!')
+
+
+        customerFound.tag = tagFound
         await customerFound.save()
 
         return customerFound.toObject()
     }
 
+    /* Remove tag from customer */
+    static async unsetTag({ cusId }) {
+        const customerFound = await customer.findById(cusId)
+        if (!customerFound) throw new NotFoundError('Not found Customer!')
+        
+        customerFound.tag = {}
+        await customerFound.save()
+        return customerFound.toObject()
+    }
+
 
     /* List customer by tag */
-    static async findByTags (tagId){
+    static async findByTags({tagId}) {
         const tagFound = await tags.findById(tagId)
-        if(!tagFound) throw new NotFoundError('Not found tag!')
+        if (!tagFound) throw new NotFoundError('Not found tag!')
 
         const query = {
-            'tag._id' : tagFound._id 
+            'tag._id': tagFound._id
         }
         return await findAllCustomerIf({
-            query, limit:20, skip:0
+            query, limit: 20, skip: 0
+        })
+    }
+
+    /* List all customer */
+    static async findAllCustomer() {
+        const query = {}
+
+        return await findAllCustomerIf({
+            query, limit: 20, skip: 0
         })
     }
 }
@@ -72,8 +90,8 @@ class Customer {
     async createCustomer(_id) {
 
         // check is phone used
-        const customerFound = await customer.findOne({phone : this.phone})
-        if(customerFound) throw new BadRequestError('Phone is already userd')
+        const customerFound = await customer.findOne({ phone: this.phone })
+        if (customerFound) throw new BadRequestError('Phone is already userd')
 
         return await customer.create({
             ...this,
@@ -96,7 +114,7 @@ class SIC extends Customer {
 
 class LEC extends Customer {
     async createCustomer() {
-        const newSI = await LE.create({
+        const newLE = await LE.create({
             ...this.additional
         })
         if (!newLE) throw new BadRequestError('cannot create LE')

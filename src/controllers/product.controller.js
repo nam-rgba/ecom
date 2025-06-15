@@ -4,6 +4,11 @@ const ProductFactory = require("../services/product.service")
 
 class ProductController {
     // POST
+    /**
+     * 
+     *  @description create new product
+     *  @return {json}
+     */
     createProduct = async (req, res, next)=>{
         new SuccessResponse({
             message: 'create product successfully',
@@ -31,14 +36,16 @@ class ProductController {
         }).send(res)
     }
 
-    // SEARCH
-
+    // POST : Search product 
     searchProduct = async (req, res, next) =>{
         new SuccessResponse({
             message: "Here what u find",
             metadata: await ProductFactory.searchProduct(req.params)
         }).send(res)
     }
+
+
+    
 }
 
 module.exports = new ProductController()

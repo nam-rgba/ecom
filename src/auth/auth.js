@@ -56,7 +56,7 @@ const authentication = asyncHandler(async (req, res, next) => {
     // 3.--------------------------------------------------------
     /* get access key first */
     const row = await findAccessKeyById(userId )
-    if (!row) throw new NotFoundError('Not found user key')
+    if (!row) throw new NotFoundError('This session have been cracked or time out, please loggin again')
     try {
         const decoded =  JWT.verify(accessToken, row.accessKey)
         if(userId!=decoded.userId.toString()) throw new AuthFailureError('Invalid User')

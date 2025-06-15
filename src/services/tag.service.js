@@ -4,12 +4,12 @@ const { BadRequestError } = require('../res/error.response')
 class TagServices {
 
     // Service to add new tag
-    static addNewTag = async ({ name, priority }) => {
+    static addNewTag = async ({ name }) => {
     //    find if tag already created
-        const existing = await tagModel.findOne({name})
+        const existing = await tagModel.findOne({name: name})
         if(existing) throw new BadRequestError('Tag already taken')
 
-        return await tagModel.create({name, priority})
+        return await tagModel.create({name})
     }
 
     // List all tag

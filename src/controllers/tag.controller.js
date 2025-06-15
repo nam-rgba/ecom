@@ -6,6 +6,9 @@ class TagController {
         new SuccessResponse ({
             message: "OK",
             metadata: await TagServices.addNewTag(req.body)
-        })
+        }).send(res)
     }
+
 }
+
+module.exports = new TagController
