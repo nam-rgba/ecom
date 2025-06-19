@@ -1,6 +1,7 @@
 const { product, rice } = require("../models/product.model")
 const { BadRequestError } = require('../res/error.response')
 const {findAllProductIf, searchByText} = require('../models/repository/product.repo')
+const NotificationSevice = require('./notification.service')
 
 
 /* factory */
@@ -16,6 +17,11 @@ class ProductFactory {
     static async createProduct (type, payload){
         const productClass = ProductFactory.productClassType[type]
         if(!productClass) throw new BadRequestError('Invalid type class')
+        
+        // Need to check if product already is in database, base on CODE
+        const found = await product.findOne({product_code: payload.product_code})
+        if(found) throw new BadRequestError('Product code found, this product is already in DB!')
+
         return new productClass(payload).createProduct()
     } 
 
@@ -34,7 +40,7 @@ class Product {
 
     constructor({
         product_name, product_thumb, product_description, product_shop,
-        product_price, product_quantity, product_type, product_attributes,
+        product_price, product_quantity, product_type, product_attributes, product_code
     }) {
         this.product_name = product_name
         this.product_thumb = product_thumb
@@ -48,10 +54,19 @@ class Product {
     }
 
     async createProduct(_id) {
-        return await product.create({
-            ...this,
-            _id:_id
-        })
+        const newProduct = await product.create({...this, _id: _id})
+        if(newProduct){
+            await NotificationSevice.pushNotification({
+                type: 'PRODUCT_001',
+                receiveId: 1,
+                option:{
+                    product_name: newProduct.product_name
+                }
+            }).then(rs => console.log(rs))
+            .catch(console.error)
+        }
+
+        return newProduct
     }
 }
 
